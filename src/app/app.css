@@ -1334,10 +1334,10 @@ td:first-child {
 .page-heading { margin-bottom: 18px; }
 .page-heading h1 { font-size: 27px; }
 .metric-grid, .report-metrics { gap: 10px; margin-bottom: 12px; }
-.metric-card, .report-card { padding: 14px 16px; }
+.metric-card, .report-card { padding: 12px 14px; }
 .metric-card strong { margin-top: 8px; font-size: 24px; }
 .dashboard-grid, .report-grid, .category-manager-grid { gap: 12px; margin-bottom: 12px; }
-.panel { padding: 15px 16px; }
+.panel { padding: 13px 14px; }
 .budget-total { margin-top: 15px; }
 .progress-track { margin-top: 12px; }
 .budget-foot { margin-bottom: 14px; }
@@ -1378,7 +1378,7 @@ td { padding: 8px 10px; }
 }
 
 /* Keep tile content comfortable; tighten only the space around sections. */
-.page-content { max-width: none; padding: 12px 1.5% 14px; }
+.page-content { max-width: none; padding: 10px 1.5% 12px; }
 .page-heading { margin-bottom: 10px; }
 .dashboard-grid, .report-grid, .category-manager-grid { gap: 8px; margin-bottom: 8px; }
 .reports-dashboard, .reference-reports, .category-manager { gap: 8px; margin-bottom: 8px; }
@@ -1387,8 +1387,8 @@ td { padding: 8px 10px; }
 .reference-tiles { margin: 0; }
 .reference-tile { min-height: 265px; padding: 20px; }
 .report-card { padding: 20px 22px; }
-.panel { padding: 22px 23px; }
-.category-form-panel { padding: 22px 23px; }
+.panel { padding: 13px 14px; }
+.category-form-panel { padding: 13px 14px; }
 
 @media (max-width: 600px) {
     .page-content { padding: 12px 2.5% 12px; }
@@ -1397,13 +1397,13 @@ td { padding: 8px 10px; }
 
 /* Keep the dashboard compact like the reference layout. */
 .topbar { padding-left: 20px; padding-right: 20px; }
-.page-content { width: 100%; padding: 16px 20px 20px; }
+.page-content { width: 100%; padding: 12px 16px 16px; }
 .reference-reports, .reports-dashboard, .category-manager { width: 100%; }
 .page-heading { margin-bottom: 16px; }
 .metric-grid, .report-metrics { gap: 12px; margin-bottom: 12px; }
 .dashboard-grid, .report-grid, .category-manager-grid { gap: 12px; margin-bottom: 12px; }
 .reports-dashboard, .reference-reports, .category-manager { gap: 12px; margin-bottom: 12px; }
-.panel { padding: 16px; }
+.panel { padding: 13px 14px; }
 .report-page-heading { padding-left: 0; padding-right: 0; }
 .table-wrap { margin-top: 12px; }
 th { padding: 0 12px 8px; }
