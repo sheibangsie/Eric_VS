@@ -37,12 +37,13 @@
 .brand-mark {
     display: grid;
     place-items: center;
-    width: 29px;
-    height: 29px;
-    border-radius: 7px;
-    background: #d3ee6a;
-    color: #173b36;
-    font: bold 19px Georgia, serif;
+    width: 28px;
+    height: 28px;
+    border: 1px solid #d3ee6a;
+    border-radius: 50%;
+    background: transparent;
+    color: #d3ee6a;
+    font: bold 17px Georgia, serif;
 }
 
 .nav-label,
@@ -1428,9 +1429,11 @@ td { padding: 8px 10px; }
 .brand-mark {
     width: 30px;
     height: 30px;
-    border-radius: 2px;
-    background: #0a6ed1;
-    color: #fff;
+    border: 1px solid #0a6ed1;
+    border-radius: 50%;
+    background: transparent;
+    color: #0a6ed1;
+    font-size: 17px;
 }
 
 .nav-label {
