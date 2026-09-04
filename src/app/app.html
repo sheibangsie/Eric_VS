@@ -75,19 +75,22 @@
                   [style.width.%]="categoryTotal(category) > 0 ? 70 : 10"></i></span></div>}</div>
         </section>
         <div class="overview-side-column">
+          <section class="panel subcategory-overview">
+            <div class="panel-heading"><div><h2>Sub-category overview</h2><p class="muted">Your top spending trends</p></div><span class="trend-arrow">↗</span></div>
           @if (subcategoryTrends().length) {
           <div class="subcategory-trend-grid">
             @for (trend of subcategoryTrends(); track trend.name) {
-            <section class="panel subcategory-trend-tile">
+            <article class="subcategory-trend-tile">
               <div class="panel-heading"><div><h2>{{ trend.name }}</h2><p class="muted">Sub-category trend</p></div><span class="trend-arrow">↗</span></div>
               <strong class="subcategory-total">{{ trend.total | currency:'PHP':'symbol':'0.0-0' }}</strong>
               <div class="subcategory-sparkline" aria-label="{{ trend.name }} spending trend">@for (point of trend.points; track $index) {<i [style.height.%]="point"></i>}</div>
-            </section>
+            </article>
             }
           </div>
           } @else {
-          <section class="panel subcategory-empty"><h2>Sub-category trends</h2><p class="muted">Add expenses with sub-categories to see trendlines.</p></section>
+          <p class="muted subcategory-empty">Add expenses with sub-categories to see trendlines.</p>
           }
+          </section>
           <section class="panel add-panel">
           <div class="panel-heading">
             <div>
