@@ -6,13 +6,6 @@ const XLSX = require('xlsx');
 
 const port = 3000;
 const workbookPath = path.join(__dirname, 'data', 'transactions.xlsx');
-const seed = [
-  { id: 1, date: '2026-09-04', description: 'Salary deposit', category: 'Income', type: 'Income', amount: 5200 },
-  { id: 2, date: '2026-09-03', description: 'Apartment rent', category: 'Housing', type: 'Expense', amount: 1650 },
-  { id: 3, date: '2026-09-02', description: 'Weekly groceries', category: 'Food', type: 'Expense', amount: 86.45 },
-  { id: 4, date: '2026-09-01', description: 'Metro pass', category: 'Transport', type: 'Expense', amount: 72 },
-  { id: 5, date: '2026-08-30', description: 'Streaming bundle', category: 'Lifestyle', type: 'Expense', amount: 24.99 },
-];
 
 function send(response, status, body) {
   response.writeHead(status, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'http://localhost:4200', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'GET,PUT,DELETE,OPTIONS' });
@@ -21,8 +14,8 @@ function send(response, status, body) {
 
 async function readTransactions() {
   if (!existsSync(workbookPath)) {
-    await writeTransactions(seed);
-    return seed;
+    await writeTransactions([]);
+    return [];
   }
   const workbook = XLSX.read(await readFile(workbookPath), { type: 'buffer' });
   return XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);

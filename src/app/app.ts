@@ -10,6 +10,7 @@ interface Transaction {
   date: string;
   description: string;
   category: string;
+  subcategory: string;
   type: TransactionType;
   amount: number;
 }
@@ -18,8 +19,14 @@ interface NewTransaction {
   date: string;
   description: string;
   category: string;
+  subcategory: string;
   type: TransactionType;
   amount: number | null;
+}
+
+interface CategoryGroup {
+  name: string;
+  subcategories: string[];
 }
 
 @Component({
@@ -33,19 +40,24 @@ export class App {
     ? 'http://localhost:3000/api/transactions'
     : null;
   protected readonly activeSection = signal('Overview');
-  protected readonly monthLabel = 'September 2026';
-  protected readonly categories = ['Housing', 'Food', 'Transport', 'Lifestyle', 'Bills', 'Health'];
-  protected readonly transactions = signal<Transaction[]>([
-    { id: 1, date: '2026-09-04', description: 'Salary deposit', category: 'Income', type: 'Income', amount: 5200 },
-    { id: 2, date: '2026-09-03', description: 'Apartment rent', category: 'Housing', type: 'Expense', amount: 1650 },
-    { id: 3, date: '2026-09-02', description: 'Weekly groceries', category: 'Food', type: 'Expense', amount: 86.45 },
-    { id: 4, date: '2026-09-01', description: 'Metro pass', category: 'Transport', type: 'Expense', amount: 72 },
-    { id: 5, date: '2026-08-30', description: 'Streaming bundle', category: 'Lifestyle', type: 'Expense', amount: 24.99 },
+  protected readonly selectedMonth = signal('2026-09');
+  protected readonly monthOptions = computed(() => [...new Set(this.transactions().map((item) => item.date.slice(0, 7)))].sort().reverse());
+  protected readonly monthLabel = computed(() => this.formatMonth(this.selectedMonth()));
+  protected readonly categoryGroups = signal<CategoryGroup[]>([
+    { name: 'Housing', subcategories: ['Rent', 'Utilities', 'Repairs'] },
+    { name: 'Food', subcategories: ['Groceries', 'Restaurants', 'Coffee'] },
+    { name: 'Transport', subcategories: ['Commute', 'Fuel', 'Parking'] },
+    { name: 'Lifestyle', subcategories: ['Entertainment', 'Shopping', 'Subscriptions'] },
+    { name: 'Bills', subcategories: ['Phone', 'Internet', 'Insurance'] },
+    { name: 'Health', subcategories: ['Medicine', 'Appointments', 'Fitness'] },
   ]);
+  protected get categories(): string[] { return this.categoryGroups().map((group) => group.name); }
+  protected readonly transactions = signal<Transaction[]>([]);
   protected readonly newTransaction = signal<NewTransaction>(this.emptyTransaction());
   protected readonly budget = signal(3800);
-  protected readonly totalIncome = computed(() => this.transactions().filter((item) => item.type === 'Income').reduce((sum, item) => sum + item.amount, 0));
-  protected readonly totalSpent = computed(() => this.transactions().filter((item) => item.type === 'Expense').reduce((sum, item) => sum + item.amount, 0));
+  protected readonly selectedTransactions = computed(() => this.transactions().filter((item) => item.date.startsWith(this.selectedMonth())));
+  protected readonly totalIncome = computed(() => this.selectedTransactions().filter((item) => item.type === 'Income').reduce((sum, item) => sum + item.amount, 0));
+  protected readonly totalSpent = computed(() => this.selectedTransactions().filter((item) => item.type === 'Expense').reduce((sum, item) => sum + item.amount, 0));
   protected readonly balance = computed(() => this.totalIncome() - this.totalSpent());
   protected readonly budgetProgress = computed(() => Math.min(100, (this.totalSpent() / this.budget()) * 100));
   protected readonly reportCategories = computed(() => this.categories
@@ -54,6 +66,18 @@ export class App {
     .sort((first, second) => second.total - first.total));
   protected readonly reportExpenseCount = computed(() => this.transactions().filter((item) => item.type === 'Expense').length);
   protected readonly reportSavingsRate = computed(() => this.totalIncome() > 0 ? (this.balance() / this.totalIncome()) * 100 : 0);
+  protected readonly budgetLeft = computed(() => Math.max(0, this.budget() - this.totalSpent()));
+  protected readonly savingsProgress = computed(() => Math.min(100, this.reportSavingsRate()));
+  protected readonly savingsFundGoal = 10000;
+  protected readonly savingsFundProgress = computed(() => Math.min(100, Math.max(0, (this.balance() / this.savingsFundGoal) * 100)));
+  protected readonly trendData = computed(() => this.monthOptions().slice(0, 6).reverse().map((month) => ({
+    month: new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' }).format(new Date(`${month}-01T00:00:00Z`)),
+    amount: this.transactions().filter((item) => item.type === 'Expense' && item.date.startsWith(month)).reduce((sum, item) => sum + item.amount, 0),
+  })));
+  protected readonly newCategoryName = signal('');
+  protected readonly newCategorySubcategory = signal('');
+  protected readonly selectedCategoryForSubcategory = signal('');
+  protected readonly newSubcategoryName = signal('');
 
   constructor() {
     const saved = localStorage.getItem('ledger-transactions');
@@ -62,6 +86,10 @@ export class App {
     }
     const savedBudget = Number(localStorage.getItem('ledger-budget'));
     if (savedBudget > 0) this.budget.set(savedBudget);
+    const savedCategories = localStorage.getItem('ledger-categories');
+    if (savedCategories) {
+      try { this.categoryGroups.set(JSON.parse(savedCategories)); } catch { localStorage.removeItem('ledger-categories'); }
+    }
     this.loadFromApi();
   }
 
@@ -81,13 +109,48 @@ export class App {
   protected updateField(field: keyof NewTransaction, value: string | number | null): void {
     this.newTransaction.update((form) => {
       if (field === 'type' && value === 'Income') return { ...form, type: 'Income', category: 'Income' };
-      if (field === 'type' && value === 'Expense') return { ...form, type: 'Expense', category: form.category === 'Income' ? 'Food' : form.category };
+      if (field === 'type' && value === 'Expense') return { ...form, type: 'Expense', category: form.category === 'Income' ? this.categories[0] : form.category, subcategory: form.subcategory || this.subcategoriesFor(form.category === 'Income' ? this.categories[0] : form.category)[0] || '' };
+      if (field === 'category') return { ...form, category: String(value), subcategory: this.subcategoriesFor(String(value))[0] || '' };
       return { ...form, [field]: value };
     });
   }
 
+  protected subcategoriesFor(category: string): string[] {
+    return this.categoryGroups().find((group) => group.name === category)?.subcategories ?? [];
+  }
+
+  protected addCategory(name: string, subcategory: string): void {
+    const categoryName = name.trim();
+    const subcategoryName = subcategory.trim();
+    if (!categoryName || this.categories.some((category) => category.toLowerCase() === categoryName.toLowerCase())) return;
+    this.categoryGroups.update((groups) => [...groups, { name: categoryName, subcategories: subcategoryName ? [subcategoryName] : [] }]);
+    this.persistCategories();
+  }
+
+  protected addSubcategory(category: string, subcategory: string): void {
+    const subcategoryName = subcategory.trim();
+    if (!category || !subcategoryName) return;
+    this.categoryGroups.update((groups) => groups.map((group) => group.name === category && !group.subcategories.some((item) => item.toLowerCase() === subcategoryName.toLowerCase()) ? { ...group, subcategories: [...group.subcategories, subcategoryName] } : group));
+    this.persistCategories();
+  }
+
+  protected createCategory(): void {
+    this.addCategory(this.newCategoryName(), this.newCategorySubcategory());
+    this.newCategoryName.set('');
+    this.newCategorySubcategory.set('');
+  }
+
+  protected createSubcategory(): void {
+    this.addSubcategory(this.selectedCategoryForSubcategory(), this.newSubcategoryName());
+    this.newSubcategoryName.set('');
+  }
+
   protected selectSection(section: string): void {
     this.activeSection.set(section);
+  }
+
+  protected selectMonth(month: string): void {
+    this.selectedMonth.set(month);
   }
 
   protected addTransaction(): void {
@@ -119,6 +182,7 @@ export class App {
         description: String(row['Description'] ?? 'Imported transaction'),
         category: String(row['Category'] ?? 'Other'),
         type: String(row['Type'] ?? 'Expense') === 'Income' ? 'Income' as TransactionType : 'Expense' as TransactionType,
+        subcategory: String(row['Subcategory'] ?? ''),
         amount: Number(row['Amount'] ?? 0),
       })).filter((item) => item.amount > 0);
       this.transactions.set([...imported, ...this.transactions()]);
@@ -130,7 +194,7 @@ export class App {
   }
 
   protected exportWorkbook(): void {
-    const rows = this.transactions().map(({ id, ...item }) => ({ Date: item.date, Description: item.description, Category: item.category, Type: item.type, Amount: item.amount }));
+    const rows = this.transactions().map(({ id, ...item }) => ({ Date: item.date, Description: item.description, Category: item.category, Subcategory: item.subcategory, Type: item.type, Amount: item.amount }));
     const sheet = XLSX.utils.json_to_sheet(rows);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet, 'Transactions');
@@ -138,10 +202,15 @@ export class App {
   }
 
   protected categoryTotal(category: string): number {
-    return this.transactions().filter((item) => item.category === category && item.type === 'Expense').reduce((sum, item) => sum + item.amount, 0);
+    return this.selectedTransactions().filter((item) => item.category === category && item.type === 'Expense').reduce((sum, item) => sum + item.amount, 0);
+  }
+
+  protected formatMonth(month: string): string {
+    return new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${month}-01T00:00:00Z`));
   }
 
   private persist(): void { localStorage.setItem('ledger-transactions', JSON.stringify(this.transactions())); }
+  private persistCategories(): void { localStorage.setItem('ledger-categories', JSON.stringify(this.categoryGroups())); }
   private loadFromApi(): void {
     if (!this.apiUrl) return;
     void fetch(this.apiUrl).then((response) => response.ok ? response.json() : Promise.reject()).then((items: Transaction[]) => {
@@ -153,5 +222,5 @@ export class App {
     if (!this.apiUrl) return;
     void fetch(this.apiUrl, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(this.transactions()) }).catch(() => undefined);
   }
-  private emptyTransaction(): NewTransaction { return { date: new Date().toISOString().slice(0, 10), description: '', category: 'Food', type: 'Expense', amount: null }; }
+  private emptyTransaction(): NewTransaction { return { date: new Date().toISOString().slice(0, 10), description: '', category: 'Food', subcategory: 'Groceries', type: 'Expense', amount: null }; }
 }
