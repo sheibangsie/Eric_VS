@@ -1533,7 +1533,7 @@ td { padding: 10px 12px; }
 .page-content {
     max-width: none;
     width: 100%;
-    padding: 8px 4px 12px;
+    padding: 16px 20px 20px;
 }
 
 .page-heading h1,
@@ -1657,7 +1657,7 @@ td { padding: 10px 12px; }
 }
 
 .reports-dashboard {
-    gap: 22px;
+    gap: 12px;
 }
 
 .report-header {
