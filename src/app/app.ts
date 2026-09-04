@@ -29,6 +29,12 @@ interface CategoryGroup {
   subcategories: string[];
 }
 
+interface SubcategoryTrend {
+  name: string;
+  total: number;
+  points: number[];
+}
+
 @Component({
   imports: [CommonModule, FormsModule],
   selector: 'app-root',
@@ -74,6 +80,24 @@ export class App {
     month: new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' }).format(new Date(`${month}-01T00:00:00Z`)),
     amount: this.transactions().filter((item) => item.type === 'Expense' && item.date.startsWith(month)).reduce((sum, item) => sum + item.amount, 0),
   })));
+  protected readonly subcategoryTrends = computed<SubcategoryTrend[]>(() => {
+    const months = this.monthOptions().slice(0, 6).reverse();
+    const totals = new Map<string, number[]>();
+    this.transactions().filter((item) => item.type === 'Expense' && item.subcategory).forEach((item) => {
+      const points = totals.get(item.subcategory) ?? months.map(() => 0);
+      const monthIndex = months.indexOf(item.date.slice(0, 7));
+      if (monthIndex >= 0) points[monthIndex] += item.amount;
+      totals.set(item.subcategory, points);
+    });
+    return [...totals.entries()]
+      .map(([name, points]) => ({ name, total: points.reduce((sum, amount) => sum + amount, 0), points }))
+      .sort((first, second) => second.total - first.total)
+      .slice(0, 2)
+      .map((trend) => {
+        const maximum = Math.max(...trend.points, 1);
+        return { ...trend, points: trend.points.map((point) => point ? Math.max(12, (point / maximum) * 100) : 4) };
+      });
+  });
   protected readonly newCategoryName = signal('');
   protected readonly newCategorySubcategory = signal('');
   protected readonly selectedCategoryForSubcategory = signal('');
