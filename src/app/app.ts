@@ -67,6 +67,11 @@ export class App {
     }
   }
 
+  protected editBudget(): void {
+    const value = window.prompt('Enter your monthly budget', String(this.budget()));
+    if (value !== null) this.updateBudget(value);
+  }
+
   protected updateField(field: keyof NewTransaction, value: string | number | null): void {
     this.newTransaction.update((form) => {
       if (field === 'type' && value === 'Income') return { ...form, type: 'Income', category: 'Income' };
