@@ -78,15 +78,18 @@
           <section class="panel subcategory-overview">
             <div class="panel-heading"><div><h2>Sub-category overview</h2><p class="muted">Your top spending trends</p></div><span class="trend-arrow">↗</span></div>
           @if (subcategoryTrends().length) {
-          <div class="subcategory-trend-grid">
-            @for (trend of subcategoryTrends(); track trend.name) {
-            <article class="subcategory-trend-tile">
-              <div class="panel-heading"><div><h2>{{ trend.name }}</h2><p class="muted">Sub-category trend</p></div><span class="trend-arrow">↗</span></div>
-              <strong class="subcategory-total">{{ trend.total | currency:'PHP':'symbol':'0.0-0' }}</strong>
-              <div class="subcategory-sparkline" aria-label="{{ trend.name }} spending trend">@for (point of trend.points; track $index) {<i [style.height.%]="point"></i>}</div>
-            </article>
-            }
+          <div class="subcategory-chart" aria-label="Sub-category spending trend chart">
+            <div class="subcategory-chart-scale"><span>₱{{ totalSpent() | number:'1.0-0' }}</span><span>₱0</span></div>
+            <div class="subcategory-bars">
+              @for (month of trendData(); track month.month; let monthIndex = $index) {
+              <div class="subcategory-column">
+                <div class="subcategory-bar-group">@for (trend of subcategoryTrends(); track trend.name) {<i [class]="'subcategory-bar bar-' + $index" [style.height.%]="trend.points[monthIndex] || 4" [title]="trend.name"></i>}</div>
+                <small>{{ month.month }}</small>
+              </div>
+              }
+            </div>
           </div>
+          <div class="subcategory-legend">@for (trend of subcategoryTrends(); track trend.name; let index = $index) {<span><i [class]="'legend-dot bar-' + index"></i>{{ trend.name }}</span>}</div>
           } @else {
           <p class="muted subcategory-empty">Add expenses with sub-categories to see trendlines.</p>
           }

@@ -302,15 +302,24 @@
 
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 1.06fr .94fr;
+    grid-template-columns: .88fr 1.12fr;
     gap: 19px;
     margin-bottom: 19px;
 }
 
 .overview-side-column { display: grid; align-content: start; gap: 12px; }
-.subcategory-trend-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.subcategory-overview { min-height: 124px; }
-.subcategory-trend-tile { min-height: 100px; padding: 10px; border: 1px solid #d9dfe5; background: #fbfcfa; }
+.subcategory-overview { min-height: 210px; }
+.subcategory-chart { display: flex; gap: 8px; height: 112px; margin-top: 16px; border-bottom: 1px solid #d9dfe5; background: repeating-linear-gradient(to bottom, transparent 0, transparent 27px, #edf0f2 28px); }
+.subcategory-chart-scale { display: flex; flex-direction: column; justify-content: space-between; color: #6a7785; font-size: 8px; padding-bottom: 16px; }
+.subcategory-bars { display: flex; flex: 1; align-items: stretch; justify-content: space-around; gap: 8px; }
+.subcategory-column { display: flex; flex: 1; min-width: 0; flex-direction: column; align-items: center; justify-content: flex-end; }
+.subcategory-bar-group { display: flex; align-items: end; justify-content: center; gap: 3px; width: 100%; height: 88px; }
+.subcategory-bar { display: block; width: 12px; min-height: 3px; background: #0a6ed1; }
+.subcategory-bar.bar-1 { background: #4caf50; }
+.subcategory-column small { margin-top: 7px; color: #6a7785; font-size: 8px; }
+.subcategory-legend { display: flex; gap: 12px; margin-top: 10px; color: #6a7785; font-size: 9px; }
+.legend-dot { display: inline-block; width: 7px; height: 7px; margin-right: 4px; background: #0a6ed1; }
+.legend-dot.bar-1 { background: #4caf50; }
 .subcategory-empty { margin: 20px 0 4px; }
 .trend-arrow { color: #0a6ed1; font-size: 16px; }
 .subcategory-total { display: block; margin-top: 12px; color: #1d2d3e; font-size: 20px; font-weight: 500; }
@@ -1348,10 +1357,10 @@ td:first-child {
 .metric-card strong { margin-top: 8px; font-size: 24px; }
 .dashboard-grid, .report-grid, .category-manager-grid { gap: 12px; margin-bottom: 12px; }
 .panel { padding: 13px 14px; }
-.budget-total { margin-top: 15px; }
-.progress-track { margin-top: 12px; }
-.budget-foot { margin-bottom: 14px; }
-.category-list { gap: 8px; }
+.budget-total { margin-top: 10px; }
+.progress-track { margin-top: 8px; }
+.budget-foot { margin-bottom: 10px; }
+.category-list { gap: 6px; }
 .form-grid { gap: 10px 9px; }
 .form-grid input, .form-grid select { margin-top: 4px; padding: 8px; }
 .type-toggle { margin: 13px 0 11px; }
