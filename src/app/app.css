@@ -577,7 +577,7 @@
 table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 620px;
+    min-width: 700px;
 }
 
 th {
@@ -623,6 +623,10 @@ td:first-child {
     padding: 5px 8px;
     border-radius: 4px;
     font-size: 10px;
+}
+
+.subcategory-cell {
+    color: #76837c;
 }
 
 .align-right {

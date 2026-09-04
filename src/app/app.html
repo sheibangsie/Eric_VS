@@ -2,42 +2,316 @@
   <nav class="sidebar">
     <div class="brand"><span class="brand-mark">$</span><span>ledger</span></div>
     <div class="nav-label">WORKSPACE</div>
-    <a class="nav-link" [class.active]="activeSection() === 'Overview'" (click)="selectSection('Overview')"><span class="nav-icon">◈</span>Overview</a>
-    <a class="nav-link" [class.active]="activeSection() === 'Transactions'" (click)="selectSection('Transactions')"><span class="nav-icon">↔</span>Transactions</a>
-    <a class="nav-link" [class.active]="activeSection() === 'Categories'" (click)="selectSection('Categories')"><span class="nav-icon">▤</span>Categories</a>
-    <a class="nav-link" [class.active]="activeSection() === 'Reports'" (click)="selectSection('Reports')"><span class="nav-icon">⌁</span>Reports</a>
-    <div class="sidebar-bottom"><div class="profile"><span class="avatar">ES</span><span><strong>Eric Smith</strong><small>Personal account</small></span><span class="dots">•••</span></div></div>
+    <a class="nav-link" [class.active]="activeSection() === 'Overview'" (click)="selectSection('Overview')"><span
+        class="nav-icon">◈</span>Overview</a>
+    <a class="nav-link" [class.active]="activeSection() === 'Transactions'"
+      (click)="selectSection('Transactions')"><span class="nav-icon">↔</span>Transactions</a>
+    <a class="nav-link" [class.active]="activeSection() === 'Categories'" (click)="selectSection('Categories')"><span
+        class="nav-icon">▤</span>Categories</a>
+    <a class="nav-link" [class.active]="activeSection() === 'Reports'" (click)="selectSection('Reports')"><span
+        class="nav-icon">⌁</span>Reports</a>
+    <div class="sidebar-bottom">
+      <div class="profile"><span class="avatar">ES</span><span><strong>Eric Smith</strong><small>Personal
+            account</small></span><span class="dots">•••</span></div>
+    </div>
   </nav>
   <section class="workspace">
-    <header class="topbar"><div class="breadcrumbs">Workspace <span>/</span> Overview</div><div class="top-actions"><label class="import-button">↥ Import Excel<input type="file" accept=".xlsx,.xls,.csv" (change)="importWorkbook($event)" /></label><button class="export-button" type="button" (click)="exportWorkbook()">＋ Export .xlsx</button></div></header>
+    <header class="topbar">
+      <div class="breadcrumbs">Workspace <span>/</span> Overview</div>
+      <div class="top-actions"><label class="import-button">↥ Import Excel<input type="file" accept=".xlsx,.xls,.csv"
+            (change)="importWorkbook($event)" /></label><button class="export-button" type="button"
+          (click)="exportWorkbook()">＋ Export .xlsx</button></div>
+    </header>
     <div class="page-content">
       @if (activeSection() !== 'Reports') {
-      <div class="page-heading"><div><p class="eyebrow">PERSONAL FINANCE</p><h1>Good morning, Eric</h1><p class="muted">Here is your financial snapshot for {{ monthLabel() }}.</p></div><select class="month-button" [ngModel]="selectedMonth()" (ngModelChange)="selectMonth($event)">@for (month of monthOptions(); track month) {<option [value]="month">{{ formatMonth(month) }}</option>}</select></div>
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">PERSONAL FINANCE</p>
+          <h1>Good morning, Eric</h1>
+          <p class="muted">Here is your financial snapshot for {{ monthLabel() }}.</p>
+        </div><select class="month-button" [ngModel]="selectedMonth()" (ngModelChange)="selectMonth($event)">@for (month
+          of monthOptions(); track month) {<option [value]="month">{{ formatMonth(month) }}</option>}</select>
+      </div>
       }
       @if (activeSection() === 'Overview') {
       <div class="metric-grid">
-        <article class="metric-card balance-card"><div class="metric-top"><span>Available balance</span><span class="metric-icon">↗</span></div><strong>{{ balance() | currency:'PHP':'symbol':'1.2-2' }}</strong><p class="muted">From recorded transactions</p></article>
-        <article class="metric-card"><div class="metric-top"><span>Income</span><span class="metric-icon income">↗</span></div><strong>{{ totalIncome() | currency:'PHP':'symbol':'1.2-2' }}</strong><p class="muted">From recorded transactions</p></article>
-        <article class="metric-card"><div class="metric-top"><span>Spent this month</span><span class="metric-icon expense">↘</span></div><strong>{{ totalSpent() | currency:'PHP':'symbol':'1.2-2' }}</strong><p class="muted">From recorded transactions</p></article>
+        <article class="metric-card balance-card">
+          <div class="metric-top"><span>Available balance</span><span class="metric-icon">↗</span></div><strong>{{
+            balance() | currency:'PHP':'symbol':'1.2-2' }}</strong>
+          <p class="muted">From recorded transactions</p>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><span>Income</span><span class="metric-icon income">↗</span></div><strong>{{
+            totalIncome() | currency:'PHP':'symbol':'1.2-2' }}</strong>
+          <p class="muted">From recorded transactions</p>
+        </article>
+        <article class="metric-card">
+          <div class="metric-top"><span>Spent this month</span><span class="metric-icon expense">↘</span></div>
+          <strong>{{ totalSpent() | currency:'PHP':'symbol':'1.2-2' }}</strong>
+          <p class="muted">From recorded transactions</p>
+        </article>
       </div>
       <div class="dashboard-grid">
-        <section class="panel budget-panel"><div class="panel-heading"><div><h2>Budget overview</h2><p class="muted">Your spending across categories</p></div><button class="more-button" type="button">•••</button></div><div class="budget-total"><div><span>Monthly budget</span><button class="budget-edit" type="button" aria-label="Change monthly budget" (click)="editBudget()">{{ budget() | currency:'PHP':'symbol':'1.2-2' }}</button></div><div class="spent-copy"><span>Spent</span><strong>{{ totalSpent() | currency:'PHP':'symbol':'1.2-2' }}</strong></div></div><div class="progress-track"><span [style.width.%]="budgetProgress()"></span></div><p class="budget-foot"><span>{{ budgetProgress() | number:'1.0-0' }}% used</span><span>{{ budget() - totalSpent() | currency:'PHP':'symbol':'1.2-2' }} remaining</span></p><div class="category-list">@for (category of categories; track category) {<div class="category-row"><span class="category-dot" [class]="'dot-' + $index"></span><span class="category-name">{{ category }}</span><span class="category-amount">{{ categoryTotal(category) | currency:'PHP':'symbol':'1.2-2' }}</span><span class="category-bar"><i [style.width.%]="categoryTotal(category) > 0 ? 70 : 10"></i></span></div>}</div></section>
-        <section class="panel add-panel"><div class="panel-heading"><div><h2>Add transaction</h2><p class="muted">Keep your ledger up to date</p></div><span class="plus-badge">＋</span></div><div class="type-toggle"><button type="button" [class.selected]="newTransaction().type === 'Expense'" (click)="updateField('type', 'Expense')">Expense</button><button type="button" [class.selected]="newTransaction().type === 'Income'" (click)="updateField('type', 'Income')">Income</button></div><div class="form-grid"><label>Description<input [ngModel]="newTransaction().description" (ngModelChange)="updateField('description', $event)" placeholder="e.g. Coffee with friends" /></label><label>Amount<div class="amount-input"><span>₱</span><input type="number" min="0" [ngModel]="newTransaction().amount" (ngModelChange)="updateField('amount', $event)" placeholder="0.00" /></div></label><label>Category<select [ngModel]="newTransaction().category" (ngModelChange)="updateField('category', $event)">@if (newTransaction().type === 'Income') {<option value="Income">Income</option>} @for (category of categories; track category) {<option [value]="category">{{ category }}</option>}</select></label><label>Sub-category<select [ngModel]="newTransaction().subcategory" (ngModelChange)="updateField('subcategory', $event)"><option value="">No sub-category</option>@for (subcategory of subcategoriesFor(newTransaction().category); track subcategory) {<option [value]="subcategory">{{ subcategory }}</option>}</select></label><label>Date<input type="date" [ngModel]="newTransaction().date" (ngModelChange)="updateField('date', $event)" /></label></div><button class="add-button" type="button" (click)="addTransaction()">Add transaction <span>→</span></button></section>
+        <section class="panel budget-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Budget overview</h2>
+              <p class="muted">Your spending across categories</p>
+            </div><button class="more-button" type="button">•••</button>
+          </div>
+          <div class="budget-total">
+            <div><span>Monthly budget</span><button class="budget-edit" type="button" aria-label="Change monthly budget"
+                (click)="editBudget()">{{ budget() | currency:'PHP':'symbol':'1.2-2' }}</button></div>
+            <div class="spent-copy"><span>Spent</span><strong>{{ totalSpent() | currency:'PHP':'symbol':'1.2-2'
+                }}</strong></div>
+          </div>
+          <div class="progress-track"><span [style.width.%]="budgetProgress()"></span></div>
+          <p class="budget-foot"><span>{{ budgetProgress() | number:'1.0-0' }}% used</span><span>{{ budget() -
+              totalSpent() | currency:'PHP':'symbol':'1.2-2' }} remaining</span></p>
+          <div class="category-list">@for (category of categories; track category) {<div class="category-row"><span
+                class="category-dot" [class]="'dot-' + $index"></span><span class="category-name">{{ category
+                }}</span><span class="category-amount">{{ categoryTotal(category) | currency:'PHP':'symbol':'1.2-2'
+                }}</span><span class="category-bar"><i
+                  [style.width.%]="categoryTotal(category) > 0 ? 70 : 10"></i></span></div>}</div>
+        </section>
+        <section class="panel add-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Add transaction</h2>
+              <p class="muted">Keep your ledger up to date</p>
+            </div><span class="plus-badge">＋</span>
+          </div>
+          <div class="type-toggle"><button type="button" [class.selected]="newTransaction().type === 'Expense'"
+              (click)="updateField('type', 'Expense')">Expense</button><button type="button"
+              [class.selected]="newTransaction().type === 'Income'"
+              (click)="updateField('type', 'Income')">Income</button></div>
+          <div class="form-grid"><label>Description<input [ngModel]="newTransaction().description"
+                (ngModelChange)="updateField('description', $event)"
+                placeholder="e.g. Coffee with friends" /></label><label>Amount<div class="amount-input">
+                <span>₱</span><input type="number" min="0" [ngModel]="newTransaction().amount"
+                  (ngModelChange)="updateField('amount', $event)" placeholder="0.00" /></div>
+              </label><label>Category<select [ngModel]="newTransaction().category"
+                (ngModelChange)="updateField('category', $event)">@if (newTransaction().type === 'Income') {<option
+                  value="Income">Income</option>} @for (category of categories; track category) {<option
+                  [value]="category">{{ category }}</option>}</select></label><label>Sub-category<select
+                [ngModel]="newTransaction().subcategory" (ngModelChange)="updateField('subcategory', $event)">
+                <option value="">No sub-category</option>@for (subcategory of
+                subcategoriesFor(newTransaction().category); track subcategory) {<option [value]="subcategory">{{
+                  subcategory }}</option>}
+              </select></label><label>Date<input type="date" [ngModel]="newTransaction().date"
+                (ngModelChange)="updateField('date', $event)" /></label></div><button class="add-button" type="button"
+            (click)="addTransaction()">Add transaction <span>→</span></button>
+        </section>
       </div>
       }
       @if (activeSection() === 'Categories') {
-      <section class="category-manager"><div class="category-manager-heading"><div><p class="eyebrow">PERSONAL FINANCE</p><h2>Categories</h2><p class="muted">Create categories and sub-categories for your transactions.</p></div></div><div class="category-manager-grid"><section class="panel category-form-panel"><h3>Create category</h3><p class="muted">Add a new top-level spending group.</p><label>Category name<input [ngModel]="newCategoryName()" (ngModelChange)="newCategoryName.set($event)" placeholder="e.g. Education" /></label><label>First sub-category <span class="optional">optional</span><input [ngModel]="newCategorySubcategory()" (ngModelChange)="newCategorySubcategory.set($event)" placeholder="e.g. Tuition" /></label><button class="add-button" type="button" (click)="createCategory()">Create category <span>→</span></button></section><section class="panel category-form-panel"><h3>Add sub-category</h3><p class="muted">Add an option to an existing category.</p><label>Category<select [ngModel]="selectedCategoryForSubcategory()" (ngModelChange)="selectedCategoryForSubcategory.set($event)"><option value="">Choose a category</option>@for (category of categories; track category) {<option [value]="category">{{ category }}</option>}</select></label><label>Sub-category name<input [ngModel]="newSubcategoryName()" (ngModelChange)="newSubcategoryName.set($event)" placeholder="e.g. School supplies" /></label><button class="add-button" type="button" (click)="createSubcategory()">Add sub-category <span>→</span></button></section></div><section class="panel category-directory"><div class="panel-heading"><div><h3>Available categories</h3><p class="muted">These options appear in Add transaction.</p></div><span class="report-icon">≡</span></div><div class="category-directory-list">@for (group of categoryGroups(); track group.name) {<div class="category-directory-row"><strong>{{ group.name }}</strong><div>@if (group.subcategories.length) {@for (subcategory of group.subcategories; track subcategory) {<span>{{ subcategory }}</span>}} @else {<span class="empty-category">No sub-categories yet</span>}</div></div>}</div></section></section>
+      <section class="category-manager">
+        <div class="category-manager-heading">
+          <div>
+            <p class="eyebrow">PERSONAL FINANCE</p>
+            <h2>Categories</h2>
+            <p class="muted">Create categories and sub-categories for your transactions.</p>
+          </div>
+        </div>
+        <div class="category-manager-grid">
+          <section class="panel category-form-panel">
+            <h3>Create category</h3>
+            <p class="muted">Add a new top-level spending group.</p><label>Category name<input
+                [ngModel]="newCategoryName()" (ngModelChange)="newCategoryName.set($event)"
+                placeholder="e.g. Education" /></label><label>First sub-category <span
+                class="optional">optional</span><input [ngModel]="newCategorySubcategory()"
+                (ngModelChange)="newCategorySubcategory.set($event)" placeholder="e.g. Tuition" /></label><button
+              class="add-button" type="button" (click)="createCategory()">Create category <span>→</span></button>
+          </section>
+          <section class="panel category-form-panel">
+            <h3>Add sub-category</h3>
+            <p class="muted">Add an option to an existing category.</p><label>Category<select
+                [ngModel]="selectedCategoryForSubcategory()"
+                (ngModelChange)="selectedCategoryForSubcategory.set($event)">
+                <option value="">Choose a category</option>@for (category of categories; track category) {<option
+                  [value]="category">{{ category }}</option>}
+              </select></label><label>Sub-category name<input [ngModel]="newSubcategoryName()"
+                (ngModelChange)="newSubcategoryName.set($event)" placeholder="e.g. School supplies" /></label><button
+              class="add-button" type="button" (click)="createSubcategory()">Add sub-category <span>→</span></button>
+          </section>
+        </div>
+        <section class="panel category-directory">
+          <div class="panel-heading">
+            <div>
+              <h3>Available categories</h3>
+              <p class="muted">These options appear in Add transaction.</p>
+            </div><span class="report-icon">≡</span>
+          </div>
+          <div class="category-directory-list">@for (group of categoryGroups(); track group.name) {<div
+              class="category-directory-row"><strong>{{ group.name }}</strong>
+              <div>@if (group.subcategories.length) {@for (subcategory of group.subcategories; track subcategory)
+                {<span>{{ subcategory }}</span>}} @else {<span class="empty-category">No sub-categories yet</span>}
+              </div>
+            </div>}</div>
+        </section>
+      </section>
       }
       @if (activeSection() === 'Reports') {
       <section class="reference-reports">
-        <div class="report-page-heading"><div><p class="eyebrow">PERSONAL FINANCE</p><h2>Reports dashboard</h2><p class="muted">Selected month: {{ monthLabel() }} · Currency: Philippine Peso (₱)</p></div><select class="month-button" [ngModel]="selectedMonth()" (ngModelChange)="selectMonth($event)">@for (month of monthOptions(); track month) {<option [value]="month">{{ formatMonth(month) }}</option>}</select></div>
-        <div class="reference-metrics"><article><span>Monthly spend</span><strong>{{ totalSpent() | currency:'PHP':'symbol':'1.0-0' }}</strong><small>From expense transactions</small></article><article><span>Budget left</span><strong>{{ budgetLeft() | currency:'PHP':'symbol':'1.0-0' }}</strong><small>Remaining from monthly budget</small></article><article><span>Savings</span><strong>{{ balance() | currency:'PHP':'symbol':'1.0-0' }}</strong><small>Current savings balance</small></article><article><span>Savings progress</span><strong>{{ savingsProgress() | number:'1.0-0' }}%</strong><small>Based on income</small></article></div>
-        <div class="reference-tiles"><section class="reference-tile trend-tile"><div class="tile-heading"><div><h3>Monthly spend trend</h3><p>Expense activity by month</p></div><span>₱</span></div><div class="trend-chart">@for (point of trendData(); track point.month) {<div class="trend-column"><i [style.height.%]="point.amount"></i><small>{{ point.month }}</small></div>}</div></section><section class="reference-tile category-tile"><div class="tile-heading"><div><h3>Category breakdown</h3><p>Expense totals by category</p></div><span>≡</span></div><div class="tile-bars">@for (item of reportCategories(); track item.category; let index = $index) {<div><label><span><i class="category-dot" [class]="'dot-' + index"></i>{{ item.category }}</span><b>{{ item.total | currency:'PHP':'symbol':'0.0-0' }}</b></label><em><i [style.width.%]="(item.total / totalSpent()) * 100"></i></em></div>} @if (!reportCategories().length) {<p class="empty-report">Add expenses to see categories.</p>}</div></section><section class="reference-tile savings-tile"><div class="tile-heading"><div><h3>Savings progress</h3><p>Income kept after spending</p></div><span>↗</span></div><div class="savings-number"><strong>{{ savingsProgress() | number:'1.0-0' }}%</strong><small>of income saved</small></div><div class="reference-progress"><i [style.width.%]="savingsProgress()"></i></div><div class="tile-foot"><span>Saved {{ balance() | currency:'PHP':'symbol':'1.0-0' }}</span><span>Income {{ totalIncome() | currency:'PHP':'symbol':'1.0-0' }}</span></div></section><section class="reference-tile fund-tile"><div class="tile-heading"><div><h3>Savings fund goal</h3><p>Progress toward your emergency fund</p></div><span>◎</span></div><div class="fund-goal"><strong>{{ balance() | currency:'PHP':'symbol':'1.0-0' }}</strong><small>of {{ savingsFundGoal | currency:'PHP':'symbol':'1.0-0' }} goal</small></div><div class="reference-progress"><i [style.width.%]="savingsFundProgress()"></i></div><div class="tile-foot"><span>{{ savingsFundProgress() | number:'1.0-0' }}% complete</span><span>{{ savingsFundGoal - balance() | currency:'PHP':'symbol':'1.0-0' }} to go</span></div></section></div>
+        <div class="report-page-heading">
+          <div>
+            <p class="eyebrow">PERSONAL FINANCE</p>
+            <h2>Reports dashboard</h2>
+            <p class="muted">Selected month: {{ monthLabel() }} · Currency: Philippine Peso (₱)</p>
+          </div><select class="month-button" [ngModel]="selectedMonth()" (ngModelChange)="selectMonth($event)">@for
+            (month of monthOptions(); track month) {<option [value]="month">{{ formatMonth(month) }}</option>}</select>
+        </div>
+        <div class="reference-metrics">
+          <article><span>Monthly spend</span><strong>{{ totalSpent() | currency:'PHP':'symbol':'1.0-0'
+              }}</strong><small>From expense transactions</small></article>
+          <article><span>Budget left</span><strong>{{ budgetLeft() | currency:'PHP':'symbol':'1.0-0'
+              }}</strong><small>Remaining from monthly budget</small></article>
+          <article><span>Savings</span><strong>{{ balance() | currency:'PHP':'symbol':'1.0-0' }}</strong><small>Current
+              savings balance</small></article>
+          <article><span>Savings progress</span><strong>{{ savingsProgress() | number:'1.0-0' }}%</strong><small>Based
+              on income</small></article>
+        </div>
+        <div class="reference-tiles">
+          <section class="reference-tile trend-tile">
+            <div class="tile-heading">
+              <div>
+                <h3>Monthly spend trend</h3>
+                <p>Expense activity by month</p>
+              </div><span>₱</span>
+            </div>
+            <div class="trend-chart">@for (point of trendData(); track point.month) {<div class="trend-column"><i
+                  [style.height.%]="point.amount"></i><small>{{ point.month }}</small></div>}</div>
+          </section>
+          <section class="reference-tile category-tile">
+            <div class="tile-heading">
+              <div>
+                <h3>Category breakdown</h3>
+                <p>Expense totals by category</p>
+              </div><span>≡</span>
+            </div>
+            <div class="tile-bars">@for (item of reportCategories(); track item.category; let index = $index) {<div>
+                <label><span><i class="category-dot" [class]="'dot-' + index"></i>{{ item.category }}</span><b>{{
+                    item.total | currency:'PHP':'symbol':'0.0-0' }}</b></label><em><i
+                    [style.width.%]="(item.total / totalSpent()) * 100"></i></em></div>} @if
+              (!reportCategories().length) {<p class="empty-report">Add expenses to see categories.</p>}</div>
+          </section>
+          <section class="reference-tile savings-tile">
+            <div class="tile-heading">
+              <div>
+                <h3>Savings progress</h3>
+                <p>Income kept after spending</p>
+              </div><span>↗</span>
+            </div>
+            <div class="savings-number"><strong>{{ savingsProgress() | number:'1.0-0' }}%</strong><small>of income
+                saved</small></div>
+            <div class="reference-progress"><i [style.width.%]="savingsProgress()"></i></div>
+            <div class="tile-foot"><span>Saved {{ balance() | currency:'PHP':'symbol':'1.0-0' }}</span><span>Income {{
+                totalIncome() | currency:'PHP':'symbol':'1.0-0' }}</span></div>
+          </section>
+          <section class="reference-tile fund-tile">
+            <div class="tile-heading">
+              <div>
+                <h3>Savings fund goal</h3>
+                <p>Progress toward your emergency fund</p>
+              </div><span>◎</span>
+            </div>
+            <div class="fund-goal"><strong>{{ balance() | currency:'PHP':'symbol':'1.0-0' }}</strong><small>of {{
+                savingsFundGoal | currency:'PHP':'symbol':'1.0-0' }} goal</small></div>
+            <div class="reference-progress"><i [style.width.%]="savingsFundProgress()"></i></div>
+            <div class="tile-foot"><span>{{ savingsFundProgress() | number:'1.0-0' }}% complete</span><span>{{
+                savingsFundGoal - balance() | currency:'PHP':'symbol':'1.0-0' }} to go</span></div>
+          </section>
+        </div>
       </section>
-      <section class="reports-dashboard"><div class="report-header"><div><p class="eyebrow">FINANCIAL REPORT</p><h2>Where your money goes</h2><p class="muted">A clear view of your income, spending, and savings.</p></div><button class="export-button" type="button" (click)="exportWorkbook()">↧ Export report</button></div><div class="report-metrics"><article class="report-card report-income"><span>Income</span><strong>{{ totalIncome() | currency:'PHP':'symbol':'1.2-2' }}</strong><small>Money received</small></article><article class="report-card report-expense"><span>Expenses</span><strong>{{ totalSpent() | currency:'PHP':'symbol':'1.2-2' }}</strong><small>{{ reportExpenseCount() }} transactions</small></article><article class="report-card report-savings"><span>Net savings</span><strong>{{ balance() | currency:'PHP':'symbol':'1.2-2' }}</strong><small>{{ reportSavingsRate() | number:'1.0-0' }}% of income</small></article></div><div class="report-grid"><section class="panel report-breakdown"><div class="panel-heading"><div><h2>Spending by category</h2><p class="muted">Your largest expense areas</p></div><span class="report-icon">⌁</span></div>@if (reportCategories().length) {<div class="report-category-list">@for (item of reportCategories(); track item.category; let index = $index) {<div class="report-category"><div class="report-category-label"><span><i class="category-dot" [class]="'dot-' + index"></i>{{ item.category }}</span><strong>{{ item.total | currency:'PHP':'symbol':'1.2-2' }}</strong></div><div class="report-bar"><i [style.width.%]="(item.total / totalSpent()) * 100"></i></div></div>}</div>} @else {<p class="empty-report">Add an expense to see your category breakdown.</p>}</section><section class="panel report-health"><div class="panel-heading"><div><h2>Budget health</h2><p class="muted">Monthly progress</p></div><span class="health-ring" [style.--progress.%]="budgetProgress()">{{ budgetProgress() | number:'1.0-0' }}%</span></div><div class="health-copy"><span>Budget used</span><strong>{{ totalSpent() | currency:'PHP':'symbol':'1.2-2' }} of {{ budget() | currency:'PHP':'symbol':'1.2-2' }}</strong></div><div class="progress-track"><span [style.width.%]="budgetProgress()"></span></div><p class="budget-foot"><span>{{ budgetProgress() | number:'1.0-0' }}% used</span><span>{{ budget() - totalSpent() | currency:'PHP':'symbol':'1.2-2' }} remaining</span></p><button class="view-all report-link" type="button" (click)="selectSection('Overview')">Back to overview <span>→</span></button></section></div></section>
+      <section class="reports-dashboard">
+        <div class="report-header">
+          <div>
+            <p class="eyebrow">FINANCIAL REPORT</p>
+            <h2>Where your money goes</h2>
+            <p class="muted">A clear view of your income, spending, and savings.</p>
+          </div><button class="export-button" type="button" (click)="exportWorkbook()">↧ Export report</button>
+        </div>
+        <div class="report-metrics">
+          <article class="report-card report-income"><span>Income</span><strong>{{ totalIncome() |
+              currency:'PHP':'symbol':'1.2-2' }}</strong><small>Money received</small></article>
+          <article class="report-card report-expense"><span>Expenses</span><strong>{{ totalSpent() |
+              currency:'PHP':'symbol':'1.2-2' }}</strong><small>{{ reportExpenseCount() }} transactions</small>
+          </article>
+          <article class="report-card report-savings"><span>Net savings</span><strong>{{ balance() |
+              currency:'PHP':'symbol':'1.2-2' }}</strong><small>{{ reportSavingsRate() | number:'1.0-0' }}% of
+              income</small></article>
+        </div>
+        <div class="report-grid">
+          <section class="panel report-breakdown">
+            <div class="panel-heading">
+              <div>
+                <h2>Spending by category</h2>
+                <p class="muted">Your largest expense areas</p>
+              </div><span class="report-icon">⌁</span>
+            </div>@if (reportCategories().length) {<div class="report-category-list">@for (item of reportCategories();
+              track item.category; let index = $index) {<div class="report-category">
+                <div class="report-category-label"><span><i class="category-dot" [class]="'dot-' + index"></i>{{
+                    item.category }}</span><strong>{{ item.total | currency:'PHP':'symbol':'1.2-2' }}</strong></div>
+                <div class="report-bar"><i [style.width.%]="(item.total / totalSpent()) * 100"></i></div>
+              </div>}</div>} @else {<p class="empty-report">Add an expense to see your category breakdown.</p>}
+          </section>
+          <section class="panel report-health">
+            <div class="panel-heading">
+              <div>
+                <h2>Budget health</h2>
+                <p class="muted">Monthly progress</p>
+              </div><span class="health-ring" [style.--progress.%]="budgetProgress()">{{ budgetProgress() |
+                number:'1.0-0' }}%</span>
+            </div>
+            <div class="health-copy"><span>Budget used</span><strong>{{ totalSpent() | currency:'PHP':'symbol':'1.2-2'
+                }} of {{ budget() | currency:'PHP':'symbol':'1.2-2' }}</strong></div>
+            <div class="progress-track"><span [style.width.%]="budgetProgress()"></span></div>
+            <p class="budget-foot"><span>{{ budgetProgress() | number:'1.0-0' }}% used</span><span>{{ budget() -
+                totalSpent() | currency:'PHP':'symbol':'1.2-2' }} remaining</span></p><button
+              class="view-all report-link" type="button" (click)="selectSection('Overview')">Back to overview
+              <span>→</span></button>
+          </section>
+        </div>
+      </section>
       }
-      <section class="panel transactions-panel"><div class="panel-heading"><div><h2>{{ activeSection() === 'Transactions' ? 'All transactions' : 'Recent transactions' }}</h2><p class="muted">{{ activeSection() === 'Transactions' ? 'Your complete transaction history' : 'Your latest activity' }}</p></div>@if (activeSection() === 'Overview') {<button class="view-all" type="button" (click)="selectSection('Transactions')">View all <span>→</span></button>}</div><div class="table-wrap"><table><thead><tr><th>Transaction</th><th>Category</th><th>Date</th><th class="align-right">Amount</th><th></th></tr></thead><tbody>@for (transaction of transactions(); track transaction.id) {<tr><td><span class="transaction-icon" [class.income-icon]="transaction.type === 'Income'">{{ transaction.type === 'Income' ? '↗' : '↘' }}</span><strong>{{ transaction.description }}</strong></td><td><span class="category-pill">{{ transaction.category }}</span></td><td class="muted">{{ transaction.date | date:'MMM d, y' }}</td><td class="align-right" [class.income-text]="transaction.type === 'Income'"><strong>{{ transaction.type === 'Income' ? '+' : '-' }}{{ transaction.amount | currency:'PHP':'symbol':'1.2-2' }}</strong></td><td><button class="delete-button" type="button" aria-label="Delete transaction" (click)="removeTransaction(transaction.id)">×</button></td></tr>}</tbody></table></div></section>
-      <p class="sync-note">↻ Changes are saved automatically in this browser <span>•</span> Excel import/export is available from the top right</p>
+      <section class="panel transactions-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>{{ activeSection() === 'Transactions' ? 'All transactions' : 'Recent transactions' }}</h2>
+            <p class="muted">{{ activeSection() === 'Transactions' ? 'Your complete transaction history' : 'Your latest
+              activity' }}</p>
+          </div>@if (activeSection() === 'Overview') {<button class="view-all" type="button"
+            (click)="selectSection('Transactions')">View all <span>→</span></button>}
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Transaction</th>
+                <th>Category</th>
+                <th>Sub-category</th>
+                <th>Date</th>
+                <th class="align-right">Amount</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>@for (transaction of transactions(); track transaction.id) {<tr>
+                <td><span class="transaction-icon" [class.income-icon]="transaction.type === 'Income'">{{
+                    transaction.type === 'Income' ? '↗' : '↘' }}</span><strong>{{ transaction.description }}</strong>
+                </td>
+                <td><span class="category-pill">{{ transaction.category }}</span></td>
+                <td class="subcategory-cell">{{ transaction.subcategory || '—' }}</td>
+                <td class="muted">{{ transaction.date | date:'MMM d, y' }}</td>
+                <td class="align-right" [class.income-text]="transaction.type === 'Income'"><strong>{{ transaction.type
+                    === 'Income' ? '+' : '-' }}{{ transaction.amount | currency:'PHP':'symbol':'1.2-2' }}</strong></td>
+                <td><button class="delete-button" type="button" aria-label="Delete transaction"
+                    (click)="removeTransaction(transaction.id)">×</button></td>
+              </tr>}</tbody>
+          </table>
+        </div>
+      </section>
+      <p class="sync-note">↻ Changes are saved automatically in this browser <span>•</span> Excel import/export is
+        available from the top right</p>
     </div>
   </section>
 </main>
