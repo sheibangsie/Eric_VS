@@ -43,18 +43,28 @@ export class App {
     { id: 5, date: '2026-08-30', description: 'Streaming bundle', category: 'Lifestyle', type: 'Expense', amount: 24.99 },
   ]);
   protected readonly newTransaction = signal<NewTransaction>(this.emptyTransaction());
+  protected readonly budget = signal(3800);
   protected readonly totalIncome = computed(() => this.transactions().filter((item) => item.type === 'Income').reduce((sum, item) => sum + item.amount, 0));
   protected readonly totalSpent = computed(() => this.transactions().filter((item) => item.type === 'Expense').reduce((sum, item) => sum + item.amount, 0));
   protected readonly balance = computed(() => this.totalIncome() - this.totalSpent());
-  protected readonly budget = 3800;
-  protected readonly budgetProgress = computed(() => Math.min(100, (this.totalSpent() / this.budget) * 100));
+  protected readonly budgetProgress = computed(() => Math.min(100, (this.totalSpent() / this.budget()) * 100));
 
   constructor() {
     const saved = localStorage.getItem('ledger-transactions');
     if (saved) {
       try { this.transactions.set(JSON.parse(saved)); } catch { localStorage.removeItem('ledger-transactions'); }
     }
+    const savedBudget = Number(localStorage.getItem('ledger-budget'));
+    if (savedBudget > 0) this.budget.set(savedBudget);
     this.loadFromApi();
+  }
+
+  protected updateBudget(value: string | number): void {
+    const amount = Number(value);
+    if (amount > 0) {
+      this.budget.set(amount);
+      localStorage.setItem('ledger-budget', String(amount));
+    }
   }
 
   protected updateField(field: keyof NewTransaction, value: string | number | null): void {
