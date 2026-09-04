@@ -48,6 +48,12 @@ export class App {
   protected readonly totalSpent = computed(() => this.transactions().filter((item) => item.type === 'Expense').reduce((sum, item) => sum + item.amount, 0));
   protected readonly balance = computed(() => this.totalIncome() - this.totalSpent());
   protected readonly budgetProgress = computed(() => Math.min(100, (this.totalSpent() / this.budget()) * 100));
+  protected readonly reportCategories = computed(() => this.categories
+    .map((category) => ({ category, total: this.categoryTotal(category) }))
+    .filter((item) => item.total > 0)
+    .sort((first, second) => second.total - first.total));
+  protected readonly reportExpenseCount = computed(() => this.transactions().filter((item) => item.type === 'Expense').length);
+  protected readonly reportSavingsRate = computed(() => this.totalIncome() > 0 ? (this.balance() / this.totalIncome()) * 100 : 0);
 
   constructor() {
     const saved = localStorage.getItem('ledger-transactions');
